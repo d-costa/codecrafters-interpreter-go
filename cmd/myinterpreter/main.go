@@ -20,10 +20,12 @@ func (token *Token) setToken(tokenType string, lexeme string) {
 	if tokenType == "STRING" {
 		token.literal = lexeme[1 : len(lexeme)-1]
 	} else if tokenType == "NUMBER" {
-		if strings.HasSuffix(lexeme, ".") {
+		if strings.HasSuffix(lexeme, ".") { // Ends with a dot
 			token.literal = fmt.Sprintf("%s0", lexeme)
-		} else if !strings.Contains(lexeme, ".") {
+		} else if !strings.Contains(lexeme, ".") { // Does not contain a dot
 			token.literal = fmt.Sprintf("%s.0", lexeme)
+		} else if strings.Contains(lexeme, ".") && strings.HasSuffix(lexeme, "0") { // Trailing decimal zeroes
+			token.literal = strings.TrimRight(lexeme, "0") + "0"
 		} else {
 			token.literal = lexeme
 		}
@@ -138,7 +140,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			numeric, i = extractNumeric(fileContents, i)
 
 			// For the next dot character to be considered a decimal, it must be followed by a digit
-			if i + 1 < len(fileContents) && fileContents[i] == '.' && isDigit(fileContents[i+1]){
+			if i+1 < len(fileContents) && fileContents[i] == '.' && isDigit(fileContents[i+1]) {
 				numeric += "."
 				i++
 
