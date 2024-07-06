@@ -138,15 +138,13 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			numeric, i = extractNumeric(fileContents, i)
 
 			// For the next dot character to be considered a decimal, it must be followed by a digit
-			if i < len(fileContents) && fileContents[i] == '.' {
+			if i + 1 < len(fileContents) && fileContents[i] == '.' && isDigit(fileContents[i+1]){
 				numeric += "."
 				i++
 
-				if i < len(fileContents) && isDigit(fileContents[i]) {
-					decimal := ""
-					decimal, i = extractNumeric(fileContents, i)
-					numeric += decimal
-				}
+				decimal := ""
+				decimal, i = extractNumeric(fileContents, i)
+				numeric += decimal
 			}
 
 			i-- // We are one step ahead
