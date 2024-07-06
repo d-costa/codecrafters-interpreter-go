@@ -94,6 +94,15 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			} else {
 				newToken.setToken("SLASH", "/")
 			}
+		case ' ':
+			continue
+		case '\r':
+			continue
+		case '\t':
+			continue
+		case '\n':
+			continue
+			
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
