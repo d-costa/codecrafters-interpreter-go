@@ -8,17 +8,23 @@ import (
 type Token struct {
 	TokenType string
 	lexeme    string
+	literal   string
 }
 
-var EOF Token = Token{TokenType: "EOF", lexeme: ""}
+var EOF Token = Token{TokenType: "EOF", lexeme: "", literal: "null"}
 
 func (token *Token) setToken(tokenType string, lexeme string) {
 	token.TokenType = tokenType
 	token.lexeme = lexeme
+	if tokenType == "STRING" {
+		token.literal = lexeme[1 : len(lexeme)-1]
+	} else {
+		token.literal = "null"
+	}
 }
 
 func (token *Token) toString() string {
-	return fmt.Sprintf("%s %s null", token.TokenType, token.lexeme)
+	return fmt.Sprintf("%s %s %s", token.TokenType, token.lexeme, token.literal)
 
 }
 
@@ -30,6 +36,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 	tokens := []Token{}
 	hasLexicalError := false
 	line_number := 1
+
 	for i := 0; i < len(fileContents); i++ {
 		newToken := Token{}
 
@@ -98,6 +105,25 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			continue
 		case '\n':
 			line_number++
+			continue
+		case '"':
+			terminated := false
+			literal := ""
+			i++
+			for ; i < len(fileContents); i++ {
+				if match(fileContents, i, '"') {
+					newToken.setToken("STRING", fmt.Sprintf("\"%s\"", literal))
+					terminated = true
+				} else {
+					literal += string(fileContents[i])
+				}
+			}
+			if !terminated {
+				msg := fmt.Errorf("[line %d] Error: Unterminated string.", line_number)
+				fmt.Fprintln(os.Stderr, msg)
+				hasLexicalError = true
+			}
+
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
