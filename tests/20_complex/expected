@@ -26,12 +26,14 @@ LEFT_PAREN ( null
 IDENTIFIER num1 null
 PLUS + null
 IDENTIFIER num2 null
+RIGHT_PAREN ) null
 GREATER_EQUAL >= null
 NUMBER 300 300.0
 LEFT_PAREN ( null
 IDENTIFIER a null
 MINUS - null
 IDENTIFIER b null
+RIGHT_PAREN ) null
 LESS < null
 NUMBER 10 10.0
 RIGHT_BRACE } null

@@ -158,6 +158,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 				identifier += string(fileContents[i])
 				i++
 			}
+			i-- // We are one step ahead
 			newToken.setToken("IDENTIFIER", identifier)
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
