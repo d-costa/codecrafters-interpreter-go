@@ -22,6 +22,10 @@ func (token *Token) toString() string {
 
 }
 
+func hasNext(arr []byte, index int) bool {
+	return index+1 < len(arr)
+}
+
 func tokenizeFile(fileContents []byte) ([]Token, bool) {
 	tokens := []Token{}
 	hasLexicalError := false
@@ -55,7 +59,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		case '*':
 			newToken.setToken("STAR", "*")
 		case '=':
-			if fileContents[i+1] == '=' {
+			if hasNext(fileContents, i) && fileContents[i+1] == '=' {
 				newToken.setToken("EQUAL_EQUAL", "==")
 				i += 1
 			} else {

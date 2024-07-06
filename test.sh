@@ -26,7 +26,7 @@ for TEST_DIR in "$TESTS_DIR"/*; do
     else
         echo "[STDOUT] Error: Test $(basename "$TEST_DIR") failed:"
         # Show the diff
-        diff <(echo "$ACTUAL_OUTPUT") "$EXPECTED_OUTPUT"
+        diff --color -y <(echo "$ACTUAL_OUTPUT") "$EXPECTED_OUTPUT"
         ALL_TESTS_PASSED=false
     fi
 
@@ -38,7 +38,7 @@ for TEST_DIR in "$TESTS_DIR"/*; do
         else
             echo "[STDERR] Error: Test $(basename "$TEST_DIR") failed:"
             # Show the diff
-            diff <(echo "$ACTUAL_OUTPUT_STDERR") "$EXPECTED_STDERR"
+            diff --color -y <(echo "$ACTUAL_OUTPUT_STDERR") "$EXPECTED_STDERR"
             ALL_TESTS_PASSED=false
         fi
     else
