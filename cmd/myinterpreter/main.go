@@ -152,7 +152,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 
 		case isIdentifierCharacter(fileContents[i]):
 			identifier := ""
-			for i < len(fileContents) && isIdentifierCharacter(fileContents[i]) {
+			for i < len(fileContents) && (isIdentifierCharacter(fileContents[i]) || isDigit(fileContents[i])) {
 				identifier += string(fileContents[i])
 				i++
 			}
