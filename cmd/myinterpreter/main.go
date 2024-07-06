@@ -65,6 +65,13 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			} else {
 				newToken.setToken("EQUAL", "=")
 			}
+		case '!':
+			if hasNext(fileContents, i) && fileContents[i+1] == '=' {
+				newToken.setToken("BANG_EQUAL", "!=")
+				i += 1
+			} else {
+				newToken.setToken("BANG", "!")
+			}
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)

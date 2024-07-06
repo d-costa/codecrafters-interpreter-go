@@ -7,9 +7,14 @@ PROGRAM_PATH="./your_program.sh"
 TESTS_DIR="./tests"
 
 ALL_TESTS_PASSED=true
+PASS_COUNT=0
+ALL_COUNT=0
 
 # Loop through each test directory in the tests folder
 for TEST_DIR in "$TESTS_DIR"/*; do
+    FAILED=false
+
+
     # Define the path for the test input and expected output
     TEST_INPUT="$TEST_DIR/test.lox"
     EXPECTED_OUTPUT="$TEST_DIR/expected"
@@ -27,7 +32,7 @@ for TEST_DIR in "$TESTS_DIR"/*; do
         echo "[STDOUT] Error: Test $(basename "$TEST_DIR") failed:"
         # Show the diff
         diff --color -y <(echo "$ACTUAL_OUTPUT") "$EXPECTED_OUTPUT"
-        ALL_TESTS_PASSED=false
+        FAILED=true
     fi
 
     # if EXPECTED_STDERR exists, compare it with ACTUAL_OUTPUT_STDERR
@@ -46,10 +51,19 @@ for TEST_DIR in "$TESTS_DIR"/*; do
             echo "[STDERR] Error: Test $(basename "$TEST_DIR") failed:"
             echo "Expected empty stderr, but got:"
             echo "$ACTUAL_OUTPUT_STDERR"
-            ALL_TESTS_PASSED=false
+        FAILED=true
         fi
     fi
+
+    if [ "$FAILED" = true ]; then
+        ALL_TESTS_PASSED=false
+    else
+        PASS_COUNT=$((PASS_COUNT + 1))
+    fi
+    ALL_COUNT=$((ALL_COUNT + 1))
 done
+
+echo "Pass: $PASS_COUNT, Fail: $((ALL_COUNT - PASS_COUNT))"
 
 # Exit with error if any test failed
 if [ "$ALL_TESTS_PASSED" = false ]; then
