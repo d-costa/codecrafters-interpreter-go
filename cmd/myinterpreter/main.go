@@ -59,7 +59,8 @@ func tokenizeFile(fileContents []byte) []Token {
 		}
 		newToken, err := scanToken(string(fileContents[i]))
 		if err != nil {
-			fmt.Printf("[line %d] Error: %s\n", line_number, err)
+			msg := fmt.Errorf("[line %d] Error: %s", line_number, err)
+			fmt.Fprintln(os.Stderr, msg)
 		} else {
 			tokens = append(tokens, newToken)
 		}
