@@ -131,7 +131,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			numeric, i = extractNumeric(fileContents, i)
 
 			//DECIMAL
-			if i < len(fileContents) && fileContents[i] == '.' {
+			if i + 1 < len(fileContents) && fileContents[i] == '.' && isDigit(fileContents[i+1]) {
 				numeric += "."
 				decimal := ""
 				decimal, i = extractNumeric(fileContents, i+1)
