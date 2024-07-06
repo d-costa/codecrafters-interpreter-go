@@ -1,9 +1,9 @@
+# codecrafters-interpreter-go
+
 [![progress-banner](https://backend.codecrafters.io/progress/interpreter/a419996d-f6a3-40ec-86a5-44418c7916ce)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
 This is a starting point for Go solutions to the
 ["Build Your Own Build your own Interpreter" Challenge](https://app.codecrafters.io/courses/interpreter/overview).
-
-_Add a description of your course here_
 
 **Note**: If you're viewing this repo on GitHub, head over to
 [codecrafters.io](https://codecrafters.io) to try the challenge.
