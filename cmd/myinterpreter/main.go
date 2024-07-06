@@ -22,8 +22,8 @@ func (token *Token) toString() string {
 
 }
 
-func hasNext(arr []byte, index int) bool {
-	return index+1 < len(arr)
+func match(arr []byte, index int, ch byte) bool {
+	return index < len(arr) && arr[index] == ch
 }
 
 func tokenizeFile(fileContents []byte) ([]Token, bool) {
@@ -59,19 +59,33 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		case '*':
 			newToken.setToken("STAR", "*")
 		case '=':
-			if hasNext(fileContents, i) && fileContents[i+1] == '=' {
+			if match(fileContents, i+1, '=') {
 				newToken.setToken("EQUAL_EQUAL", "==")
 				i += 1
 			} else {
 				newToken.setToken("EQUAL", "=")
 			}
 		case '!':
-			if hasNext(fileContents, i) && fileContents[i+1] == '=' {
+			if match(fileContents, i+1, '=') {
 				newToken.setToken("BANG_EQUAL", "!=")
 				i += 1
 			} else {
 				newToken.setToken("BANG", "!")
 			}
+		case '<':
+			if match(fileContents, i+1, '=') {
+				newToken.setToken("LESS_EQUAL", "<=")
+				i += 1
+			} else {
+				newToken.setToken("LESS", "<")
+			}
+		case '>':
+			if match(fileContents, i+1, '=') {
+				newToken.setToken("GREATER_EQUAL", ">=")
+				i += 1
+			} else {
+				newToken.setToken("GREATER", ">")
+		}
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
