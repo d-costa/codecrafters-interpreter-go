@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 type Token struct {
@@ -19,7 +20,11 @@ func (token *Token) setToken(tokenType string, lexeme string) {
 	if tokenType == "STRING" {
 		token.literal = lexeme[1 : len(lexeme)-1]
 	} else if tokenType == "NUMBER" {
-		token.literal = lexeme
+		if !strings.Contains(lexeme, ".") {
+			token.literal = fmt.Sprintf("%s.0", lexeme)
+		} else {
+			token.literal = lexeme
+		}
 	} else {
 		token.literal = "null"
 	}
@@ -131,12 +136,17 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			numeric, i = extractNumeric(fileContents, i)
 
 			// For the next dot character to be considered a decimal, it must be followed by a digit
-			if i + 1 < len(fileContents) && fileContents[i] == '.' && isDigit(fileContents[i+1]) {
+			if i+1 < len(fileContents) && fileContents[i] == '.' {
 				numeric += "."
+				i++
+			}
+
+			if isDigit(fileContents[i]) {
 				decimal := ""
-				decimal, i = extractNumeric(fileContents, i+1)
+				decimal, i = extractNumeric(fileContents, i)
 				numeric += decimal
 			}
+
 			i-- // We are one step ahead
 			newToken.setToken("NUMBER", numeric)
 
