@@ -14,6 +14,25 @@ type Token struct {
 
 var EOF Token = Token{TokenType: "EOF", lexeme: "", literal: "null"}
 
+var reservedWords = map[string]string{
+	"and":    "AND",
+	"class":  "CLASS",
+	"else":   "ELSE",
+	"false":  "FALSE",
+	"for":    "FOR",
+	"fun":    "FUN",
+	"if":     "IF",
+	"nil":    "NIL",
+	"or":     "OR",
+	"print":  "PRINT",
+	"return": "RETURN",
+	"super":  "SUPER",
+	"this":   "THIS",
+	"true":   "TRUE",
+	"var":    "VAR",
+	"while":  "WHILE",
+}
+
 func (token *Token) setToken(tokenType string, lexeme string) {
 	token.TokenType = tokenType
 	token.lexeme = lexeme
@@ -52,55 +71,55 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		newToken := Token{}
 
 		switch {
-		case '(' == fileContents[i]:
+		case fileContents[i] == '(':
 			newToken.setToken("LEFT_PAREN", "(")
-		case ')' == fileContents[i]:
+		case fileContents[i] == ')':
 			newToken.setToken("RIGHT_PAREN", ")")
-		case '{' == fileContents[i]:
+		case fileContents[i] == '{':
 			newToken.setToken("LEFT_BRACE", "{")
-		case '}' == fileContents[i]:
+		case fileContents[i] == '}':
 			newToken.setToken("RIGHT_BRACE", "}")
-		case ',' == fileContents[i]:
+		case fileContents[i] == ',':
 			newToken.setToken("COMMA", ",")
-		case '.' == fileContents[i]:
+		case fileContents[i] == '.':
 			newToken.setToken("DOT", ".")
-		case '-' == fileContents[i]:
+		case fileContents[i] == '-':
 			newToken.setToken("MINUS", "-")
-		case '+' == fileContents[i]:
+		case fileContents[i] == '+':
 			newToken.setToken("PLUS", "+")
-		case ';' == fileContents[i]:
+		case fileContents[i] == ';':
 			newToken.setToken("SEMICOLON", ";")
-		case '*' == fileContents[i]:
+		case fileContents[i] == '*':
 			newToken.setToken("STAR", "*")
-		case '=' == fileContents[i]:
+		case fileContents[i] == '=':
 			if match(fileContents, i+1, '=') {
 				newToken.setToken("EQUAL_EQUAL", "==")
 				i += 1
 			} else {
 				newToken.setToken("EQUAL", "=")
 			}
-		case '!' == fileContents[i]:
+		case fileContents[i] == '!':
 			if match(fileContents, i+1, '=') {
 				newToken.setToken("BANG_EQUAL", "!=")
 				i += 1
 			} else {
 				newToken.setToken("BANG", "!")
 			}
-		case '<' == fileContents[i]:
+		case fileContents[i] == '<':
 			if match(fileContents, i+1, '=') {
 				newToken.setToken("LESS_EQUAL", "<=")
 				i += 1
 			} else {
 				newToken.setToken("LESS", "<")
 			}
-		case '>' == fileContents[i]:
+		case fileContents[i] == '>':
 			if match(fileContents, i+1, '=') {
 				newToken.setToken("GREATER_EQUAL", ">=")
 				i += 1
 			} else {
 				newToken.setToken("GREATER", ">")
 			}
-		case '/' == fileContents[i]:
+		case fileContents[i] == '/':
 			if match(fileContents, i+1, '/') {
 				for i < len(fileContents) && !match(fileContents, i+1, '\n') {
 					i++
@@ -108,16 +127,16 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			} else {
 				newToken.setToken("SLASH", "/")
 			}
-		case ' ' == fileContents[i]:
+		case fileContents[i] == ' ':
 			continue
-		case '\r' == fileContents[i]:
+		case fileContents[i] == '\r':
 			continue
-		case '\t' == fileContents[i]:
+		case fileContents[i] == '\t':
 			continue
-		case '\n' == fileContents[i]:
+		case fileContents[i] == '\n':
 			line_number++
 			continue
-		case '"' == fileContents[i]:
+		case fileContents[i] == '"':
 			terminated := false
 			literal := ""
 			for i = i + 1; i < len(fileContents); i++ {
@@ -159,7 +178,13 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 				i++
 			}
 			i-- // We are one step ahead
-			newToken.setToken("IDENTIFIER", identifier)
+
+			// Check if the identifier is a reserved word
+			if tokenType, ok := reservedWords[identifier]; ok {
+				newToken.setToken(tokenType, identifier)
+			} else {
+				newToken.setToken("IDENTIFIER", identifier)
+			}
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
