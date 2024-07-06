@@ -33,6 +33,18 @@ func scanToken(ch string) Token {
 		token.setToken("LEFT_BRACE", "{")
 	case "}":
 		token.setToken("RIGHT_BRACE", "}")
+	case ",":
+		token.setToken("COMMA", ",")
+	case ".":
+		token.setToken("DOT", ".")
+	case "-":
+		token.setToken("MINUS", "-")
+	case "+":
+		token.setToken("PLUS", "+")
+	case ";":
+		token.setToken("SEMICOLON", ";")
+	case "*":
+		token.setToken("STAR", "*")
 	default:
 		fmt.Println("Unknown char: ", ch)
 	}
