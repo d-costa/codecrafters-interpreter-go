@@ -18,6 +18,8 @@ func (token *Token) setToken(tokenType string, lexeme string) {
 	token.lexeme = lexeme
 	if tokenType == "STRING" {
 		token.literal = lexeme[1 : len(lexeme)-1]
+	} else if tokenType == "NUMBER" {
+		token.literal = lexeme
 	} else {
 		token.literal = "null"
 	}
@@ -109,8 +111,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		case '"':
 			terminated := false
 			literal := ""
-			i++
-			for ; i < len(fileContents); i++ {
+			for i = i + 1; i < len(fileContents); i++ {
 				if match(fileContents, i, '"') {
 					newToken.setToken("STRING", fmt.Sprintf("\"%s\"", literal))
 					terminated = true
@@ -125,6 +126,18 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 				fmt.Fprintln(os.Stderr, msg)
 				hasLexicalError = true
 			}
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			numeric := ""
+			numeric, i = extractNumeric(fileContents, i)
+
+			//DECIMAL
+			if i < len(fileContents) && fileContents[i] == '.' {
+				numeric += "."
+				decimal := ""
+				decimal, i = extractNumeric(fileContents, i+1)
+				numeric += decimal
+			}
+			newToken.setToken("NUMBER", numeric)
 
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
@@ -139,6 +152,19 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 
 	tokens = append(tokens, EOF)
 	return tokens, hasLexicalError
+}
+
+func isDigit(ch byte) bool {
+	return ch >= '0' && ch <= '9'
+}
+
+func extractNumeric(fileContents []byte, i int) (string, int) {
+	accum := ""
+	for i < len(fileContents) && isDigit(fileContents[i]) {
+		accum += string(fileContents[i])
+		i++
+	}
+	return accum, i
 }
 
 func main() {
