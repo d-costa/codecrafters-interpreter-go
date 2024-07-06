@@ -29,6 +29,10 @@ func scanToken(ch string) Token {
 		token.setToken("LEFT_PAREN", "(")
 	case ")":
 		token.setToken("RIGHT_PAREN", ")")
+	case "{":
+		token.setToken("LEFT_BRACE", "{")
+	case "}":
+		token.setToken("RIGHT_BRACE", "}")
 	default:
 		fmt.Println("Unknown char: ", ch)
 	}
