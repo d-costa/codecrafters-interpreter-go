@@ -22,8 +22,7 @@ func (token *Token) toString() string {
 
 }
 
-func scanToken(ch string) Token {
-	token := Token{}
+func scanToken(ch string) (token Token, err error) {
 	switch ch {
 	case "(":
 		token.setToken("LEFT_PAREN", "(")
@@ -46,16 +45,24 @@ func scanToken(ch string) Token {
 	case "*":
 		token.setToken("STAR", "*")
 	default:
-		fmt.Println("Unknown char: ", ch)
+		err = fmt.Errorf("Unexpected character: %s", ch)
 	}
-	return token
+	return token, err
 }
 
 func tokenizeFile(fileContents []byte) []Token {
 	tokens := []Token{}
+	line_number := 1
 	for i := 0; i < len(fileContents); i++ {
-		newToken := scanToken(string(fileContents[i]))
-		tokens = append(tokens, newToken)
+		if fileContents[i] == '\n' {
+			line_number++
+		}
+		newToken, err := scanToken(string(fileContents[i]))
+		if err != nil {
+			fmt.Printf("[line %d] Error: %s\n", line_number, err)
+		} else {
+			tokens = append(tokens, newToken)
+		}
 	}
 
 	tokens = append(tokens, EOF)
