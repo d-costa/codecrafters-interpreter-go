@@ -31,10 +31,6 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 	hasLexicalError := false
 	line_number := 1
 	for i := 0; i < len(fileContents); i++ {
-		if fileContents[i] == '\n' {
-			line_number++
-		}
-
 		newToken := Token{}
 
 		switch fileContents[i] {
@@ -88,7 +84,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 			}
 		case '/':
 			if match(fileContents, i+1, '/') {
-				for i < len(fileContents) && fileContents[i] != '\n' {
+				for i < len(fileContents) && !match(fileContents, i+1, '\n') {
 					i++
 				}
 			} else {
@@ -101,7 +97,7 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		case '\t':
 			continue
 		case '\n':
-			continue
+			line_number++
 		default:
 			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
