@@ -22,34 +22,6 @@ func (token *Token) toString() string {
 
 }
 
-func scanToken(ch string) (token Token, err error) {
-	switch ch {
-	case "(":
-		token.setToken("LEFT_PAREN", "(")
-	case ")":
-		token.setToken("RIGHT_PAREN", ")")
-	case "{":
-		token.setToken("LEFT_BRACE", "{")
-	case "}":
-		token.setToken("RIGHT_BRACE", "}")
-	case ",":
-		token.setToken("COMMA", ",")
-	case ".":
-		token.setToken("DOT", ".")
-	case "-":
-		token.setToken("MINUS", "-")
-	case "+":
-		token.setToken("PLUS", "+")
-	case ";":
-		token.setToken("SEMICOLON", ";")
-	case "*":
-		token.setToken("STAR", "*")
-	default:
-		err = fmt.Errorf("Unexpected character: %s", string(ch))
-	}
-	return token, err
-}
-
 func tokenizeFile(fileContents []byte) ([]Token, bool) {
 	tokens := []Token{}
 	hasLexicalError := false
@@ -58,12 +30,44 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 		if fileContents[i] == '\n' {
 			line_number++
 		}
-		newToken, err := scanToken(string(fileContents[i]))
-		if err != nil {
-			msg := fmt.Errorf("[line %d] Error: %s", line_number, err)
+
+		newToken := Token{}
+
+		switch fileContents[i] {
+		case '(':
+			newToken.setToken("LEFT_PAREN", "(")
+		case ')':
+			newToken.setToken("RIGHT_PAREN", ")")
+		case '{':
+			newToken.setToken("LEFT_BRACE", "{")
+		case '}':
+			newToken.setToken("RIGHT_BRACE", "}")
+		case ',':
+			newToken.setToken("COMMA", ",")
+		case '.':
+			newToken.setToken("DOT", ".")
+		case '-':
+			newToken.setToken("MINUS", "-")
+		case '+':
+			newToken.setToken("PLUS", "+")
+		case ';':
+			newToken.setToken("SEMICOLON", ";")
+		case '*':
+			newToken.setToken("STAR", "*")
+		case '=':
+			if fileContents[i+1] == '=' {
+				newToken.setToken("EQUAL_EQUAL", "==")
+				i += 1
+			} else {
+				newToken.setToken("EQUAL", "=")
+			}
+		default:
+			msg := fmt.Errorf("[line %d] Error: Unexpected character: %c", line_number, fileContents[i])
 			fmt.Fprintln(os.Stderr, msg)
 			hasLexicalError = true
-		} else {
+		}
+
+		if newToken.TokenType != "" {
 			tokens = append(tokens, newToken)
 		}
 	}
