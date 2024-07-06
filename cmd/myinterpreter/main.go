@@ -114,10 +114,12 @@ func tokenizeFile(fileContents []byte) ([]Token, bool) {
 				if match(fileContents, i, '"') {
 					newToken.setToken("STRING", fmt.Sprintf("\"%s\"", literal))
 					terminated = true
+					break
 				} else {
 					literal += string(fileContents[i])
 				}
 			}
+
 			if !terminated {
 				msg := fmt.Errorf("[line %d] Error: Unterminated string.", line_number)
 				fmt.Fprintln(os.Stderr, msg)
