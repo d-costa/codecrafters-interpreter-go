@@ -45,13 +45,14 @@ func scanToken(ch string) (token Token, err error) {
 	case "*":
 		token.setToken("STAR", "*")
 	default:
-		err = fmt.Errorf("Unexpected character: %s", ch)
+		err = fmt.Errorf("Unexpected character: %s", string(ch))
 	}
 	return token, err
 }
 
-func tokenizeFile(fileContents []byte) []Token {
+func tokenizeFile(fileContents []byte) ([]Token, bool) {
 	tokens := []Token{}
+	hasLexicalError := false
 	line_number := 1
 	for i := 0; i < len(fileContents); i++ {
 		if fileContents[i] == '\n' {
@@ -61,13 +62,14 @@ func tokenizeFile(fileContents []byte) []Token {
 		if err != nil {
 			msg := fmt.Errorf("[line %d] Error: %s", line_number, err)
 			fmt.Fprintln(os.Stderr, msg)
+			hasLexicalError = true
 		} else {
 			tokens = append(tokens, newToken)
 		}
 	}
 
 	tokens = append(tokens, EOF)
-	return tokens
+	return tokens, hasLexicalError
 }
 
 func main() {
@@ -93,12 +95,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(fileContents) > 0 {
-		tokens := tokenizeFile(fileContents)
-		for _, token := range tokens {
-			fmt.Println(token.toString())
-		}
-	} else {
-		fmt.Println("EOF  null") // Placeholder, remove this line when implementing the scanner
+	tokens, hasLexicalError := tokenizeFile(fileContents)
+	for _, token := range tokens {
+		fmt.Println(token.toString())
+	}
+
+	if hasLexicalError {
+		os.Exit(65)
 	}
 }
